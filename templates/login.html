@@ -1,0 +1,24 @@
+{% extends 'base.html'%}
+{% block content%}
+
+{% with messages = get_flashed_messages(with_categories=true)%}
+{% for category,  message in messages %}
+    <div class = "flash {{category}}">{{message}}</div>
+{% endfor %}
+{% endwith %}
+
+<div class = "registerpage">
+<form method = "post" enctype = "multipart/form-data">
+    <label> Email:</label><br>
+    <input name = "email" class = "registerfield"><br>
+    <label> Password</label><br>
+    <input name = "password" class = "registerfield"><br>
+    <input type="checkbox" name = "remember">Stay signed in<br>
+
+<button type="submit" style = "width: 100px; height: 25px; border-radius: 10px;">LOG IN</button>
+</form>
+</div>
+<div style ="justify-self: center; text-align: center; justify-content: center; align-items: center; align-content: center; align-self: center;"">
+<p>new here? <a href="{{url_for('register')}}">Register</a></p>
+</div>
+{% endblock %}

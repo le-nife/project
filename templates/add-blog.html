@@ -1,0 +1,17 @@
+{% extends 'base.html'%}
+{% block content%}
+<div style="margin-top: 50px; text-align: center;  justify-self: center;
+    background-color: rgb(198, 182, 182);
+    border-radius: 20px;
+    padding: 5px;
+    margin-top: 20px;
+    width: 700px;" >
+<form method="post" enctype="multipart/form-data">
+    <label>title:</label><br>
+    <input type="text" name="Blog_title" placeholder="Blog Name" required style="margin-top: 5px; border-radius: 20px;"><br>
+    <label>content:</label><br>
+    <textarea name="Blog_content" placeholder="Content" style="margin-top: 5px;"></textarea><br>
+    <input type="file" name ="Blog_image"/>
+    <button type="submit" style = "width: 100px; height: 25px;">Add blog</button>
+</div>
+{% endblock %}

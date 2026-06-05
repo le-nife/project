@@ -1,0 +1,16 @@
+{% extends 'base.html'%}
+{%block content%}
+<img src="{{ url_for('static', filename='uploads/' + blog.image) }}" style="width: 300px; border-radius: 20px;">
+<h1 style="color: brown; background-color: rgb(237, 219, 219); width: 200px; border-radius: 100px; padding: 30px;">{{blog.title}}</h1>
+<h3 style="color: brown; background-color: rgb(237, 219, 219); width: 200px; border-radius: 100px; padding: 30px;">Author: {{blog.author}}</h3>
+<div style="border-radius: 40px; border: blue; background-color: rgb(237, 219, 219); padding-left: 20px; padding-right: 10px; padding-top:10px; padding-bottom: 10px; min-width: 120px; max-width: max-content;">
+    <h3>Content</h3>
+    <p>{{blog.content}}</p>
+    <a href = "{{url_for('deleteblog', id=blog.id)}}" class="toprightbtn">
+        <button>delete</button>
+    </a>
+    <a href = "{{url_for('updateblog', id=blog.id)}}" class = "update">
+        <button>Update</button>
+    </a>
+</div>
+{%endblock%}

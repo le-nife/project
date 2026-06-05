@@ -1,0 +1,22 @@
+{% extends 'base.html'%}
+{%block content%}
+<h1>Welcome to BL.O.G.S</h1>
+<h3>Home of the best blogs init init</h3>
+<div style="margin-top: 50px; text-align: center;">
+</div>
+<div style=" text-align: center; align-items: center; justify-content: center; display: flex; gap: 20px; padding: 20px; flex-wrap: wrap;">
+    {% for b in blogs %}
+    <div style = "background-color: blanchedalmond; border-radius: 30px; padding: 5px;margin-top: 10px; width: 350px; ">
+        <img src="{{ url_for('static', filename='uploads/' + b.image) }}" style="width: 350px; height: 200px; border-radius: 20px;">
+        <p>{{ b.title }} <br></p>
+        <p>{{ b.author.username }} <br></p>
+
+        
+        
+        <a href="{{ url_for('viewblog', blogname=b.title) }}">
+            <button>view blog</button>
+        </a>
+        </a>
+    </div>
+    {% endfor %}
+{% endblock%}

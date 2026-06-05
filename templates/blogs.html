@@ -1,0 +1,36 @@
+{% extends 'base.html'%}
+{% block content%}
+
+{% with messages = get_flashed_messages(with_categories=true)%}
+{% for category,  message in messages %}
+    <div class = "flash {{category}}">{{message}}</div>
+{% endfor %}
+{% endwith %}
+
+
+<div style="margin-top: 50px; text-align: center;">
+<a href = "{{url_for('addblog')}}">
+    <button style="width: 250px; height: 100px; text-align: center; align-items: center; justify-content: center;">add blog</button>
+</a>
+</div>
+<div style=" text-align: center; align-items: center; justify-content: center; display: flex; gap: 20px; padding: 20px; flex-wrap: wrap;">
+    {% for b in blog %}
+    <div style = "background-color: blanchedalmond; border-radius: 30px; padding: 5px;margin-top: 10px; width: 350px; ">
+        <img src="{{ url_for('static', filename='uploads/' + b.image) }}" style="width: 350px; height: 200px; border-radius: 20px;">
+        <p>{{ b.title }} <br></p>
+
+        
+        
+        <a href="{{ url_for('viewblog', blogname=b.title) }}">
+            <button>view blog</button>
+        </a>
+        <a href = "{{url_for('deleteblog', id=b.id)}}"">
+            <button>Delete</button>
+        </a>
+        <a href = "{{url_for('updateblog', id=b.id)}}"">
+            <button>Update</button>
+        </a>
+    </div>
+    {% endfor %}
+</div>
+{% endblock%}
