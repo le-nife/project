@@ -79,6 +79,38 @@ def addblog():
         return redirect(url_for("blogs"))
     return render_template("add-blog.html", form = Blogform)
 
+@app.route("/update/<int:id>", methods=['GET', 'POST'])
+def updateblog(id):
+    
+    blog = db.session.get(Blog, id) 
+    
+    
+    if not blog:
+        flash("Blog post not found.", "error")
+        return redirect(url_for("blogs"))
+
+    
+    Blogform = AddBlogForm(obj=blog)
+
+    
+    if request.method == 'POST':
+        blog.title = Blogform.title.data
+        blog.content = Blogform.content.data
+        
+        file = request.files.get('Blog_image')
+        if file and file.filename != '':
+            filename = file.filename
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            blog.image = filename 
+
+        db.session.commit()
+        flash("Blog updated successfully", "success")
+        return redirect(url_for("blogs"))
+
+    
+    return render_template("updateblogs.html", form=Blogform, blog=blog)
+
+
 @app.route("/view/<blogname>")
 @login_required
 def viewblog(blogname):
@@ -159,25 +191,7 @@ def logout():
     return redirect (url_for("login"))
 
 
-@app.route("/update/<id>", methods = ['GET', 'POST'])
-def updateblog(id):
-    blog=Blog.query.get(id)
-    if request.method == 'POST':
-        blog_title = Blogform.title.data
-        blog_content = Blogform.content.data
-        blog_image = Blogform.image.data
-        file = request.files['Blog_image']
-        if file and file.filename != '':
-            filename = file.filename
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            
-            blog.image = filename 
 
-        db.session.commit()
-        flash("user updated successfully","success")
-        return redirect(url_for("blogs"))
-    else:
-        return render_template("updateblogs.html", blog=blog)
 with app.app_context():
     db.create_all()
     

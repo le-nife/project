@@ -27,4 +27,4 @@ class AddBlogForm(FlaskForm):
     title = StringField('Blog Title', validators=[InputRequired(message= "Can't be empty")])
     content = TextAreaField('Content', validators=[InputRequired(message="Can't be empty")])
     image = FileField('Upload title picture', validators=[FileRequired(), FileAllowed(['jpg', 'png', 'webp', 'jpeg'])])
-    
+    submit = SubmitField('Update')
