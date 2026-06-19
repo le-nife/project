@@ -1,6 +1,4 @@
 from flask import Flask,flash, render_template,request, redirect,url_for,session
-from wtforms import StringField
-from wtforms.validators import ValidationError
 from registerforms import RegisterForm, LoginForm, AddBlogForm
 from flask_sqlalchemy import SQLAlchemy
 import os
