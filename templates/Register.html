@@ -6,16 +6,28 @@
 {% endfor %}
 {% endwith %}
 <div class = "registerpage">
-<form method = "post" enctype = "multipart/form-data">
-    <label>Name</label><br>
-    <input name="name" class="registerfield"><br>
-    <label> Email:</label><br>
-    <input name = "email" class = "registerfield"><br>
-    <label> Password</label><br>
-    <input name = "password" class = "registerfield"><br>
-    <label> Confirm password</label><br>
-    <input name = "confirm" class = "registerfield"><br>
-<button type="submit" style = "width: 100px; height: 25px; border-radius: 10px;">Register</button>
+<form action="" method = "post" enctype = "multipart/form-data">
+    <p>
+        {{ form.username.label }}<br>
+        {{ form.username() }}
+        
+    </p>
+    <p>
+        {{ form.email.label }}<br>
+        {{ form.email(size=30) }}
+        
+    </p>
+    <p>
+        {{ form.password.label }}<br>
+        {{ form.password(size=30) }}
+        
+    </p>
+
+    <p>
+        {{form.confirm_password.label}}<br>
+        {{form.confirm_password()}}
+    </p>
+    <p>{{ form.submit() }}</p>
 </form>
 </div>
 <div style = "justify-self: center; text-align: center; justify-content: center; align-items: center; align-content: center; align-self: center;">

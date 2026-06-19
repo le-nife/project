@@ -9,10 +9,15 @@
 
 <div class = "registerpage">
 <form method = "post" enctype = "multipart/form-data">
-    <label> Email:</label><br>
-    <input name = "email" class = "registerfield"><br>
-    <label> Password</label><br>
-    <input name = "password" class = "registerfield"><br>
+    <p class="registerfield">
+        {{ form.email.label }} :<br>
+        {{ form.email(size=30) }}
+    </p>
+    <p class="registerfield">
+        {{ form.password.label }}<br>
+        {{ form.password(size=30) }}
+        
+    </p>
     <input type="checkbox" name = "remember">Stay signed in<br>
 
 <button type="submit" style = "width: 100px; height: 25px; border-radius: 10px;">LOG IN</button>

@@ -7,11 +7,20 @@
     margin-top: 20px;
     width: 700px;" >
 <form method="post" enctype="multipart/form-data">
-    <label>title:</label><br>
-    <input type="text" name="Blog_title" placeholder="Blog Name" required style="margin-top: 5px; border-radius: 20px;"><br>
-    <label>content:</label><br>
-    <textarea name="Blog_content" placeholder="Content" style="margin-top: 5px;"></textarea><br>
-    <input type="file" name ="Blog_image"/>
+    
+    <p>
+    {{ form.title.label }}<br>
+    {{ form.title(size=30) }}
+    </p>
+    <p>
+    {{ form.content.label }}<br>
+    {{ form.content(size=30) }}
+    </p>
+    <p>
+    {{ form.image.label }}<br>
+    {{ form.image(size=30) }}
+    </p>
+    
     <button type="submit" style = "width: 100px; height: 25px;">Add blog</button>
 </div>
 {% endblock %}

@@ -1,4 +1,7 @@
 from flask import Flask,flash, render_template,request, redirect,url_for,session
+from wtforms import StringField
+from wtforms.validators import ValidationError
+from registerforms import RegisterForm, LoginForm, AddBlogForm
 from flask_sqlalchemy import SQLAlchemy
 import os
 from flask_bcrypt import Bcrypt
@@ -62,10 +65,11 @@ def blogs():
 @app.route("/add-blog", methods = ['GET','POST'])
 @login_required
 def addblog():
+    Blogform = AddBlogForm()
     if request.method == 'POST':
-        blog_title = request.form['Blog_title']
-        blog_content = request.form['Blog_content']
-        blog_image = request.files['Blog_image']
+        blog_title = Blogform.title.data
+        blog_content = Blogform.content.data
+        blog_image = Blogform.image.data
         filename = blog_image.filename
         filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         blog_image.save(filepath)
@@ -75,7 +79,7 @@ def addblog():
         # print("added.")
         flash("Blog added successfully","success")
         return redirect(url_for("blogs"))
-    return render_template("add-blog.html")
+    return render_template("add-blog.html", form = Blogform)
 
 @app.route("/view/<blogname>")
 @login_required
@@ -95,13 +99,14 @@ def deleteblog(id):
 
 @app.route("/Register", methods = ['GET', 'POST'])
 def register():
+    registerform = RegisterForm()
     if current_user.is_authenticated:
         return redirect(url_for('home'))
     if request.method == 'POST':
-        username = request.form["name"].strip()
-        email = request.form["email"].strip().lower()
-        password = request.form["password"]
-        confirm = request.form["confirm"]
+        username = registerform.username.data
+        email= registerform.email.data
+        password = registerform.password.data
+        confirm = registerform.confirm_password.data
         
         session['username'] = username
         session['email']= email
@@ -123,18 +128,18 @@ def register():
             flash('Bingo', 'success')
             return redirect(url_for('login'))
         
-    return render_template("register.html")
+    return render_template("register.html", form=registerform)
 
 @app.route("/Login", methods = ['GET', 'POST'])
 def login():
+    loginform = LoginForm()
     if current_user.is_authenticated:
         return redirect(url_for('home'))
 
     if request.method == 'POST':
-        email = request.form["email"].strip().lower()
-        password = request.form["password"]
-        remember = bool(request.form.get("remember"))
-        
+        email= loginform.email.data
+        password = loginform.password.data
+        remember = loginform.remember_me.data
         user=User.query.filter_by(email=email).first()
         
         if user and bcrypt.check_password_hash(user.password, password):
@@ -144,7 +149,7 @@ def login():
         else:
             flash("login failed. Check the email and password", "danger")
             
-    return render_template('login.html')
+    return render_template('login.html', form = loginform)
     
     
 @app.route("/logout")
@@ -160,9 +165,9 @@ def logout():
 def updateblog(id):
     blog=Blog.query.get(id)
     if request.method == 'POST':
-        blog.name = request.form['Blog_title']
-        blog.author = request.form['Blog_author']
-        blog.content = request.form['Blog_content']
+        blog_title = Blogform.title.data
+        blog_content = Blogform.content.data
+        blog_image = Blogform.image.data
         file = request.files['Blog_image']
         if file and file.filename != '':
             filename = file.filename
