@@ -165,7 +165,7 @@ def reset_token(token):
         return redirect(url_for('home'))
     user=User.verify_reset_token(token)
     if user is None:
-        flash("Thai is an invalid token","warning")
+        flash("That is an invalid token","warning")
         return redirect(url_for(reset_request))
     form = ResetPasswordForm()
     if request.method=="POST":
@@ -173,7 +173,7 @@ def reset_token(token):
         user.password=hashed_password
         print("hashed_password",hashed_password)
         db.session.commit()
-        flash("You password have been updated!","success")
+        flash("Your password has been updated!","success")
         return redirect(url_for("login"))
     return render_template("resettoken.html",form=form)
 
