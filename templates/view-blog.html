@@ -5,6 +5,7 @@
 <h3 style="color: brown; background-color: rgb(237, 219, 219); width: 200px; border-radius: 100px; padding: 30px;">Author: {{ blog.author.username }}</h3>
 <div style="border-radius: 40px; border: blue; background-color: rgb(237, 219, 219); padding-left: 20px; padding-right: 10px; padding-top:10px; padding-bottom: 10px; min-width: 120px; max-width: max-content;">
     <h3>Content</h3>
+    <h6>Created at : {{blog.created_at}}</h6>
     <p>{{blog.content}}</p>
     
     <a href = "{{url_for('deleteblog', id=blog.id)}}" class="toprightbtn">

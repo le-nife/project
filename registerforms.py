@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, EmailField, TextAreaField
 from flask_wtf.file import FileField, FileAllowed, FileRequired
-from wtforms.validators import ValidationError, InputRequired, email, Length
+from wtforms.validators import ValidationError, InputRequired, email, Length, DataRequired,Email,EqualTo
 from werkzeug.security import generate_password_hash
 
 class RegisterForm(FlaskForm):
@@ -28,3 +28,19 @@ class AddBlogForm(FlaskForm):
     content = TextAreaField('Content', validators=[InputRequired(message="Can't be empty")])
     image = FileField('Upload title picture', validators=[FileRequired(), FileAllowed(['jpg', 'png', 'webp', 'jpeg'])])
     submit = SubmitField('Update')
+
+
+class RequestResetForm(FlaskForm):
+    email=EmailField("Email", validators=[DataRequired(), Email()])
+    submit=SubmitField("request password reset")
+    
+    def validate_email(self, email):
+        user = User.query.filter_by(email=email.data).first()
+        if user:
+            raise ValidationError("There is no account with that email.")
+
+class ResetPasswordForm(FlaskForm):
+    password=PasswordField('Password', validators=[DataRequired()])
+    confirm_password = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('password', message='Passwords must match.')])
+    submit= SubmitField("Reset Password")
+    

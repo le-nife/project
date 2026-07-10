@@ -1,13 +1,25 @@
 from flask import Flask,flash, render_template,request, redirect,url_for,session
-from registerforms import RegisterForm, LoginForm, AddBlogForm
+from registerforms import RegisterForm, LoginForm, AddBlogForm, RequestResetForm, ResetPasswordForm
 from flask_sqlalchemy import SQLAlchemy
 import os
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from datetime import datetime
+from itsdangerous import URLSafeTimedSerializer
+from flask_mail import Mail, Message
 app = Flask(__name__)
 app.secret_key="twenty"
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
+app.config['SECRET_KEY'] = 'key'
+app.config["MAIL_SERVER"] = "smtp.gmail.com"
+app.config["MAIL_PORT"] = 587
+app.config["MAIL_USE_TLS"] = True
+app.config["MAIL_USE_SSL"] = False
+app.config['MAIL_USERNAME']="nifemi546@gmail.com"
+app.config['MAIL_PASSWORD']="dfvp xabi rmfe vboe"
+app.config["MAIL_DEFAULT_SENDER"] = "nifemi546@gmail.com"
+
+mail=Mail(app)
 UPLOAD_FOLDER = "static/uploads"
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 db = SQLAlchemy(app) 
@@ -24,12 +36,23 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String(120), nullable=False)
     blogs=db.relationship("Blog", backref='author', lazy=True, cascade='all,delete-orphan')
     
-    def __init_(self, username, email, password):
+    def __init__(self, username, email, password):
         self.username = username
         self.email = email
         self.password = password
         
-        
+    def get_reset__token(self,expires_sec=1800):
+        s =URLSafeTimedSerializer(app.config["SECRET_KEY"])
+        return s.dumps({'user_id':self.id})
+    
+    @staticmethod
+    def verify_reset_token(token):
+        s=URLSafeTimedSerializer(app.config['SECRET_KEY'])
+        try:
+            user_id=s.loads(token)['user_id']
+        except:
+            return None
+        return User.query.get(user_id)
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
@@ -51,8 +74,10 @@ class Blog(db.Model):
 @app.route("/")
 def home():
     blogs = Blog.query.all()
+    page = request.args.get("page",1,type=int)
+    blog_pages = Blog.query.paginate(page=page, per_page=3)
     print("Blogs", Blog)
-    return render_template("home.html", blogs = blogs)
+    return render_template("home.html", blogs = blogs, blog_pages = blog_pages)
 
 @app.route("/blogs")
 @login_required
@@ -78,6 +103,16 @@ def addblog():
         flash("Blog added successfully","success")
         return redirect(url_for("blogs"))
     return render_template("add-blog.html", form = Blogform)
+
+def send_reset_email(user):
+    token=User.get_reset__token(user)
+    msg=Message("Password Reset Request",sender='nifemi546@gmail.com',recipients=[user.email])
+    msg.body=f'''
+    To reset your password visit the following link:
+{url_for('reset_token',token=token, _external=True)}
+    if you did not make this request ignore this message
+'''
+    mail.send(msg)
 
 @app.route("/update/<int:id>", methods=['GET', 'POST'])
 def updateblog(id):
@@ -110,6 +145,37 @@ def updateblog(id):
     
     return render_template("updateblogs.html", form=Blogform, blog=blog)
 
+@app.route('/reset_password', methods=['GET', 'POST'])
+def reset_request():
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
+    form = RequestResetForm()
+    if request.method=="POST":
+        print(form.email.data)
+        user=User.query.filter_by(email=form.email.data).first()
+        print("user:",user)
+        send_reset_email(user)
+        flash("An Email have been sent with instructions to reset password","info")
+        return redirect(url_for("login"))
+    return render_template("resetpassword.html",form=form)
+    
+@app.route('/reset_password/<token>', methods=['GET', 'POST'])
+def reset_token(token):
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
+    user=User.verify_reset_token(token)
+    if user is None:
+        flash("Thai is an invalid token","warning")
+        return redirect(url_for(reset_request))
+    form = ResetPasswordForm()
+    if request.method=="POST":
+        hashed_password=bcrypt.generate_password_hash(form.password.data).decode('utf-8')
+        user.password=hashed_password
+        print("hashed_password",hashed_password)
+        db.session.commit()
+        flash("You password have been updated!","success")
+        return redirect(url_for("login"))
+    return render_template("resettoken.html",form=form)
 
 @app.route("/view/<blogname>")
 @login_required
