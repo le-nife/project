@@ -6,18 +6,20 @@ from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from datetime import datetime
 from itsdangerous import URLSafeTimedSerializer
+from dotenv import load_dotenv
 from flask_mail import Mail, Message
 app = Flask(__name__)
 app.secret_key="twenty"
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
 app.config['SECRET_KEY'] = 'key'
-app.config["MAIL_SERVER"] = "smtp.gmail.com"
-app.config["MAIL_PORT"] = 587
+app.config['MAIL_SERVER'] = os.environ.get('MAIL_SERVER')
+app.config['MAIL_PORT'] = int(os.environ.get('MAIL_PORT', 587))
 app.config["MAIL_USE_TLS"] = True
 app.config["MAIL_USE_SSL"] = False
-app.config['MAIL_USERNAME']="nifemi546@gmail.com"
-app.config['MAIL_PASSWORD']="dfvp xabi rmfe vboe"
-app.config["MAIL_DEFAULT_SENDER"] = "nifemi546@gmail.com"
+app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')
+app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')
+app.config['MAIL_DEFAULT_SENDER'] = os.environ.get('MAIL_DEFAULT_SENDER')
+
 
 mail=Mail(app)
 UPLOAD_FOLDER = "static/uploads"
