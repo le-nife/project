@@ -8,6 +8,11 @@ from datetime import datetime
 from itsdangerous import URLSafeTimedSerializer
 from dotenv import load_dotenv
 from flask_mail import Mail, Message
+import logging
+logger = logging.getLogger(__name__)
+
+
+load_dotenv()
 app = Flask(__name__)
 app.secret_key="twenty"
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
@@ -107,6 +112,7 @@ def addblog():
     return render_template("add-blog.html", form = Blogform)
 
 def send_reset_email(user):
+    logger.info("Token generated")
     token=User.get_reset__token(user)
     msg=Message("Password Reset Request",sender='nifemi546@gmail.com',recipients=[user.email])
     msg.body=f'''
@@ -147,6 +153,7 @@ def updateblog(id):
     
     return render_template("updateblogs.html", form=Blogform, blog=blog)
 
+logger.info("Reset password started")
 @app.route('/reset_password', methods=['GET', 'POST'])
 def reset_request():
     if current_user.is_authenticated:
@@ -154,10 +161,16 @@ def reset_request():
     form = RequestResetForm()
     if request.method=="POST":
         print(form.email.data)
+        
+        logger.info("User found")
         user=User.query.filter_by(email=form.email.data).first()
         print("user:",user)
+        logger.info("Token generated")
+        logger.info("Sending email")
         send_reset_email(user)
         flash("An Email have been sent with instructions to reset password","info")
+        
+        logger.info("Reset password completed")
         return redirect(url_for("login"))
     return render_template("resetpassword.html",form=form)
     
